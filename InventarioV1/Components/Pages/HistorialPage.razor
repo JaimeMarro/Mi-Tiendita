@@ -1,0 +1,321 @@
+﻿@page "/historial"
+@inject PupuseriaService Service
+@inject NavigationManager Navigation
+
+<div class="vender-header">
+    <span class="app-titulo">Mi Tiendita</span>
+</div>
+
+<div class="historial-filtros">
+    <button class="@(filtroActivo == "hoy" ? "tab activa" : "tab")"
+            @onclick='() => CambiarFiltro("hoy")'>
+        Hoy
+    </button>
+    <button class="@(filtroActivo == "ayer" ? "tab activa" : "tab")"
+            @onclick='() => CambiarFiltro("ayer")'>
+        Ayer
+    </button>
+    <button class="@(filtroActivo == "semana" ? "tab activa" : "tab")"
+            @onclick='() => CambiarFiltro("semana")'>
+        Esta Semana
+    </button>
+    <button class="@(filtroActivo == "mes" ? "tab activa" : "tab")"
+            @onclick='() => CambiarFiltro("mes")'>
+        Este Mes
+    </button>
+    <button class="tab" @onclick="AbrirCalendario">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">
+            <rect x="3" y="4" width="18" height="18" rx="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+        </svg>
+    </button>
+</div>
+
+<div class="categorias-tabs">
+    <button class="@(categoriaActiva == null ? "tab activa" : "tab")"
+            @onclick="() => FiltrarCategoria(null)">
+        Ver Todo
+    </button>
+    @foreach (var cat in categorias)
+    {
+        <button class="@(categoriaActiva?.Id == cat.Id ? "tab activa" : "tab")"
+                @onclick="() => FiltrarCategoria(cat)">
+            @cat.Nombre
+        </button>
+    }
+</div>
+
+@if (!string.IsNullOrEmpty(descripcionFiltro))
+{
+    <div style="padding: 8px 16px 0 16px;">
+        <span style="font-size:13px; color:#888; text-transform:capitalize; display:flex; align-items:center; gap:6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+                <rect x="3" y="4" width="18" height="18" rx="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+            </svg>
+            @descripcionFiltro
+        </span>
+    </div>
+}
+
+<div class="resumen-card">
+    <span class="resumen-label">TOTAL GENERADO</span>
+    <span class="resumen-monto">$@TotalFiltrado.ToString("0.00")</span>
+    <span class="resumen-sub">@CantidadProductos productos vendidos</span>
+</div>
+
+<h3 class="seccion-titulo">Transacciones Recientes</h3>
+
+@if (ventasFiltradas == null)
+{
+    <p class="sin-productos">Cargando...</p>
+}
+else if (!ventasFiltradas.Any())
+{
+    <p class="sin-productos">No hay ventas en este período.</p>
+}
+else
+{
+    <div class="lista-transacciones">
+        @foreach (var venta in ventasFiltradas)
+        {
+            <div class="transaccion-card">
+                <div class="transaccion-info">
+                    <span class="transaccion-hora">
+                        @venta.FechaHora.ToString("hh:mm tt")
+                    </span>
+                    <span class="transaccion-detalle">
+                        @string.Join(", ", venta.Detalles
+                            .Where(d => categoriaActiva == null ||
+                                d.Producto.CategoriaId == categoriaActiva.Id)
+                            .Select(d => $"{d.Cantidad}x {d.Producto.Nombre}"))
+                    </span>
+                </div>
+                <div class="transaccion-monto">
+                    <span class="monto">
+                        $@ObtenerTotalFiltrado(venta).ToString("0.00")
+                    </span>
+                    <span class="completado">COMPLETADO</span>
+                </div>
+            </div>
+        }
+    </div>
+}
+<div style="padding: 16px; margin-top: 8px;">
+    <button class="tab" style="font-size:12px; color:#aaa; display:flex; align-items:center; gap:6px;"
+            @onclick="() => mostrarGestionVentas = !mostrarGestionVentas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        Gestionar transacciones
+    </button>
+
+    @if (mostrarGestionVentas && ventasFiltradas != null && ventasFiltradas.Any())
+    {
+        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+            @foreach (var venta in ventasFiltradas)
+            {
+                <div style="display:flex; justify-content:space-between; align-items:center;
+                    background:#fff; border-radius:10px; padding:10px 14px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                    <div style="display:flex; flex-direction:column; gap:2px;">
+                        <span style="font-size:13px; font-weight:600;">
+                            @venta.FechaHora.ToString("hh:mm tt")
+                        </span>
+                        <span style="font-size:12px; color:#888;">
+                            $@venta.Total.ToString("0.00")
+                        </span>
+                    </div>
+                    <button class="btn-eliminar" @onclick="() => EliminarVenta(venta)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </button>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (mostrarConfirmarEliminarVenta)
+{
+    <div class="modal-overlay" @onclick="CancelarEliminarVenta">
+        <div class="modal-confirmar" @onclick:stopPropagation="true">
+            <h3 style="display:flex; align-items:center; gap:8px; justify-content:center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px; color:#e53935;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                Eliminar transacción
+            </h3>
+            <p>¿Estás segura que querés eliminar esta venta de <strong>$@ventaAEliminar?.Total.ToString("0.00")</strong>?</p>
+            <button class="btn-eliminar-confirmar" @onclick="ConfirmarEliminarVenta">
+                Sí, eliminar
+            </button>
+            <button class="btn-secondary" @onclick="CancelarEliminarVenta">
+                Cancelar
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Venta> todasLasVentas = new();
+    private List<Venta>? ventasFiltradas;
+    private List<Categoria> categorias = new();
+    private Categoria? categoriaActiva;
+    private string filtroActivo = "hoy";
+    private string descripcionFiltro = string.Empty;
+
+    private decimal TotalFiltrado => ventasFiltradas?
+        .Sum(v => ObtenerTotalFiltrado(v)) ?? 0;
+
+    private int CantidadProductos => ventasFiltradas?
+        .SelectMany(v => v.Detalles
+            .Where(d => categoriaActiva == null ||
+                d.Producto.CategoriaId == categoriaActiva.Id))
+        .Sum(d => d.Cantidad) ?? 0;
+
+    [SupplyParameterFromQuery] public string? Filtro { get; set; }
+    [SupplyParameterFromQuery] public string? Fecha { get; set; }
+    [SupplyParameterFromQuery] public int? Anio { get; set; }
+    [SupplyParameterFromQuery] public int? Mes { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        categorias = await Service.GetCategoriasAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!string.IsNullOrEmpty(Filtro))
+        {
+            if (Filtro == "fecha" && !string.IsNullOrEmpty(Fecha) &&
+                DateTime.TryParse(Fecha, out var fecha))
+            {
+                filtroActivo = "fecha";
+                descripcionFiltro = fecha.ToString("dddd dd 'de' MMMM yyyy",
+                    new System.Globalization.CultureInfo("es-ES"));
+                todasLasVentas = await Service.GetVentasPorFechaAsync(fecha);
+            }
+            else if (Filtro == "mes" && Anio.HasValue && Mes.HasValue)
+            {
+                filtroActivo = "mes";
+                descripcionFiltro = new DateTime(Anio.Value, Mes.Value, 1)
+                    .ToString("MMMM yyyy", new System.Globalization.CultureInfo("es-ES"));
+                todasLasVentas = await Service.GetVentasPorMesAsync(Anio.Value, Mes.Value);
+            }
+            else if (Filtro == "semana" && !string.IsNullOrEmpty(Fecha) &&
+                DateTime.TryParse(Fecha, out var fechaSemana))
+            {
+                filtroActivo = "semana";
+                var fin = fechaSemana.AddDays(6);
+                descripcionFiltro = $"Semana del {fechaSemana:dd/MM} al {fin:dd/MM/yyyy}";
+                todasLasVentas = await Service.GetVentasPorSemanaAsync(fechaSemana);
+            }
+            else
+            {
+                await CambiarFiltro("hoy");
+            }
+        }
+        else if (todasLasVentas.Count == 0)
+        {
+            await CambiarFiltro("hoy");
+        }
+
+        AplicarFiltroCategoria();
+    }
+
+    private async Task CambiarFiltro(string filtro)
+    {
+        filtroActivo = filtro;
+        var hoy = DateTime.Today;
+
+        descripcionFiltro = filtro switch
+        {
+            "hoy" => "Hoy, " + hoy.ToString("dd 'de' MMMM",
+                new System.Globalization.CultureInfo("es-ES")),
+            "ayer" => "Ayer, " + hoy.AddDays(-1).ToString("dd 'de' MMMM",
+                new System.Globalization.CultureInfo("es-ES")),
+            "semana" => $"Semana del {hoy.AddDays(-(int)hoy.DayOfWeek):dd/MM} al {hoy.AddDays(6 - (int)hoy.DayOfWeek):dd/MM}",
+            "mes" => hoy.ToString("MMMM yyyy",
+                new System.Globalization.CultureInfo("es-ES")),
+            _ => string.Empty
+        };
+
+        todasLasVentas = filtro switch
+        {
+            "hoy" => await Service.GetVentasPorFechaAsync(hoy),
+            "ayer" => await Service.GetVentasPorFechaAsync(hoy.AddDays(-1)),
+            "semana" => await Service.GetVentasPorSemanaAsync(hoy),
+            "mes" => await Service.GetVentasPorMesAsync(hoy.Year, hoy.Month),
+            _ => new List<Venta>()
+        };
+
+        AplicarFiltroCategoria();
+    }
+
+    private void FiltrarCategoria(Categoria? cat)
+    {
+        categoriaActiva = cat;
+        AplicarFiltroCategoria();
+    }
+
+    private void AplicarFiltroCategoria()
+    {
+        ventasFiltradas = categoriaActiva == null
+            ? todasLasVentas
+            : todasLasVentas
+                .Where(v => v.Detalles
+                    .Any(d => d.Producto.CategoriaId == categoriaActiva.Id))
+                .ToList();
+    }
+
+    private decimal ObtenerTotalFiltrado(Venta venta)
+    {
+        if (categoriaActiva == null) return venta.Total;
+        return venta.Detalles
+            .Where(d => d.Producto.CategoriaId == categoriaActiva.Id)
+            .Sum(d => d.PrecioUnitario * d.Cantidad);
+    }
+
+    private void AbrirCalendario()
+    {
+        Navigation.NavigateTo("/seleccionar-fecha");
+    }
+
+    private bool mostrarGestionVentas = false;
+
+    private bool mostrarConfirmarEliminarVenta = false;
+    private Venta? ventaAEliminar;
+
+    private void EliminarVenta(Venta venta)
+    {
+        ventaAEliminar = venta;
+        mostrarConfirmarEliminarVenta = true;
+    }
+
+    private async Task ConfirmarEliminarVenta()
+    {
+        if (ventaAEliminar != null)
+        {
+            await Service.EliminarVentaAsync(ventaAEliminar);
+            await CambiarFiltro(filtroActivo);
+        }
+        mostrarConfirmarEliminarVenta = false;
+        ventaAEliminar = null;
+    }
+
+    private void CancelarEliminarVenta()
+    {
+        mostrarConfirmarEliminarVenta = false;
+        ventaAEliminar = null;
+    }
+}

@@ -1,0 +1,57 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\jojam\\.nuget\\packages\\microsoft.aspnetcore.components.webview\\10.0.0\\staticwebassets\\blazor.modules.json",
+      "PackagePath": "staticwebassets\\_framework\\blazor.modules.json"
+    },
+    {
+      "Id": "C:\\Users\\jojam\\.nuget\\packages\\microsoft.aspnetcore.components.webview\\10.0.0\\staticwebassets\\blazor.webview.js",
+      "PackagePath": "staticwebassets\\_framework\\blazor.webview.js"
+    },
+    {
+      "Id": "D:\\ProyectosJaime\\InventarioV1\\InventarioV1\\obj\\Release\\net10.0-android\\scopedcss\\bundle\\InventarioV1.styles.css",
+      "PackagePath": "staticwebassets\\InventarioV1.styles.css"
+    },
+    {
+      "Id": "D:\\ProyectosJaime\\InventarioV1\\InventarioV1\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "D:\\ProyectosJaime\\InventarioV1\\InventarioV1\\wwwroot\\appicon-splash.png",
+      "PackagePath": "staticwebassets\\appicon-splash.png"
+    },
+    {
+      "Id": "D:\\ProyectosJaime\\InventarioV1\\InventarioV1\\wwwroot\\index.html",
+      "PackagePath": "staticwebassets\\index.html"
+    },
+    {
+      "Id": "D:\\ProyectosJaime\\InventarioV1\\InventarioV1\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css"
+    },
+    {
+      "Id": "D:\\ProyectosJaime\\InventarioV1\\InventarioV1\\wwwroot\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\lib\\bootstrap\\dist\\css\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "obj\\Release\\net10.0-android\\staticwebassets\\msbuild.InventarioV1.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
+    },
+    {
+      "Id": "obj\\Release\\net10.0-android\\staticwebassets\\msbuild.InventarioV1.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Release\\net10.0-android\\staticwebassets\\msbuild.build.InventarioV1.props",
+      "PackagePath": "build\\InventarioV1.props"
+    },
+    {
+      "Id": "obj\\Release\\net10.0-android\\staticwebassets\\msbuild.buildMultiTargeting.InventarioV1.props",
+      "PackagePath": "buildMultiTargeting\\InventarioV1.props"
+    },
+    {
+      "Id": "obj\\Release\\net10.0-android\\staticwebassets\\msbuild.buildTransitive.InventarioV1.props",
+      "PackagePath": "buildTransitive\\InventarioV1.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

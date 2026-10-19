@@ -1,0 +1,241 @@
+﻿@page "/editar-producto/{Id:int}"
+@inject PupuseriaService Service
+@inject NavigationManager Navigation
+
+<div class="page-header-bar">
+    <button class="btn-back" @onclick="Volver">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+        </svg>
+    </button>
+    <span class="app-titulo">Editar Producto</span>
+</div>
+
+<div class="form-page">
+
+    <div class="imagen-upload" @onclick="SeleccionarImagen">
+        @if (!string.IsNullOrEmpty(imagenBase64))
+        {
+            <img src="@imagenBase64" class="imagen-preview" />
+        }
+        else
+        {
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:32px;height:32px;">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="4" />
+            </svg>
+            <span>CARGAR IMAGEN</span>
+        }
+    </div>
+
+    <div class="form-group">
+        <label>Nombre del producto</label>
+        <input class="form-input" placeholder="Ej. Pupusa de Queso"
+               @bind="nombre" />
+    </div>
+
+    <div class="form-group">
+        <label>Precio</label>
+        <div class="precio-input-wrapper">
+            <span class="precio-simbolo">$</span>
+            <input class="form-input"
+                   type="number"
+                   step="0.25"
+                   min="0"
+                   placeholder="0.00"
+                   value="@precioTexto"
+                   @oninput="OnPrecioInput" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Categoría</label>
+        <div class="categorias-selector">
+            @foreach (var cat in categorias)
+            {
+                <button class="@(categoriaSeleccionada?.Id == cat.Id ? "categoria-chip selected" : "categoria-chip")"
+                        @onclick="() => SeleccionarCategoria(cat)">
+                    @cat.Nombre
+                </button>
+            }
+            <button class="categoria-chip nueva" @onclick="AbrirModalCategoria">
+                + Nueva
+            </button>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(error))
+    {
+        <p style="color:red; font-size:13px;">@error</p>
+    }
+
+    <button class="btn-primary" @onclick="GuardarCambios">
+        GUARDAR CAMBIOS
+    </button>
+
+</div>
+
+@if (mostrarModalCategoria)
+{
+    <div class="modal-overlay" @onclick="CerrarModal">
+        <div class="modal-box" @onclick:stopPropagation="true">
+            <h3 class="modal-titulo">Nueva Categoría</h3>
+            <div class="form-group">
+                <label>Nombre de la categoría</label>
+                <input class="form-input" placeholder="Ej. Postres"
+                       @bind="nuevaCategoriaNombre" />
+            </div>
+            @if (!string.IsNullOrEmpty(errorCategoria))
+            {
+                <p style="color:red; font-size:13px;">@errorCategoria</p>
+            }
+            <button class="btn-primary" @onclick="GuardarCategoria">
+                GUARDAR CATEGORÍA
+            </button>
+            <button class="btn-secondary" style="margin-top:8px" @onclick="CerrarModal">
+                CANCELAR
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+
+    private Producto? producto;
+    private string nombre = string.Empty;
+    private decimal precio = 0;
+    private string precioTexto = string.Empty;
+    private string? imagenBase64;
+    private string error = string.Empty;
+    private List<Categoria> categorias = new();
+    private Categoria? categoriaSeleccionada;
+    private bool mostrarModalCategoria = false;
+    private string nuevaCategoriaNombre = string.Empty;
+    private string errorCategoria = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categorias = await Service.GetCategoriasAsync();
+        var productos = await Service.GetProductosAsync();
+        producto = productos.FirstOrDefault(p => p.Id == Id);
+
+        if (producto != null)
+        {
+            nombre = producto.Nombre;
+            precio = producto.Precio;
+            precioTexto = precio.ToString("0.##",
+                System.Globalization.CultureInfo.InvariantCulture);
+            imagenBase64 = producto.ImagenBase64;
+            categoriaSeleccionada = categorias.FirstOrDefault(c => c.Id == producto.CategoriaId);
+        }
+    }
+
+    private void SeleccionarCategoria(Categoria cat)
+    {
+        categoriaSeleccionada = cat;
+    }
+
+    private void OnPrecioInput(ChangeEventArgs e)
+    {
+        var valor = e.Value?.ToString() ?? string.Empty;
+        if (decimal.TryParse(valor, System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture, out var parsed))
+        {
+            precio = Math.Round(parsed, 2);
+            precioTexto = precio == 0 ? string.Empty : precio.ToString("0.##",
+                System.Globalization.CultureInfo.InvariantCulture);
+        }
+        else
+        {
+            precio = 0;
+            precioTexto = string.Empty;
+        }
+    }
+
+    private async Task SeleccionarImagen()
+    {
+        try
+        {
+            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
+            {
+                Title = "Seleccionar imagen"
+            });
+
+            if (result != null)
+            {
+                using var stream = await result.OpenReadAsync();
+                using var ms = new MemoryStream();
+                await stream.CopyToAsync(ms);
+                var bytes = ms.ToArray();
+                var base64 = Convert.ToBase64String(bytes);
+                var extension = Path.GetExtension(result.FileName).TrimStart('.').ToLower();
+                var mimeType = extension == "png" ? "image/png" : "image/jpeg";
+                imagenBase64 = $"data:{mimeType};base64,{base64}";
+            }
+        }
+        catch { }
+    }
+
+    private async Task GuardarCambios()
+    {
+        error = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(nombre))
+        {
+            error = "El nombre es obligatorio.";
+            return;
+        }
+        if (precio <= 0)
+        {
+            error = "El precio debe ser mayor a 0.";
+            return;
+        }
+        if (categoriaSeleccionada == null)
+        {
+            error = "Seleccioná una categoría.";
+            return;
+        }
+
+        producto!.Nombre = nombre;
+        producto.Precio = precio;
+        producto.ImagenBase64 = imagenBase64;
+        producto.CategoriaId = categoriaSeleccionada.Id;
+
+        await Service.EditarProductoAsync(producto);
+        Navigation.NavigateTo("/inventario");
+    }
+
+    private void AbrirModalCategoria()
+    {
+        nuevaCategoriaNombre = string.Empty;
+        errorCategoria = string.Empty;
+        mostrarModalCategoria = true;
+    }
+
+    private void CerrarModal()
+    {
+        mostrarModalCategoria = false;
+    }
+
+    private async Task GuardarCategoria()
+    {
+        errorCategoria = string.Empty;
+        if (string.IsNullOrWhiteSpace(nuevaCategoriaNombre))
+        {
+            errorCategoria = "El nombre es obligatorio.";
+            return;
+        }
+        var cat = new Categoria { Nombre = nuevaCategoriaNombre };
+        await Service.AgregarCategoriaAsync(cat);
+        categorias = await Service.GetCategoriasAsync();
+        categoriaSeleccionada = categorias.Last();
+        mostrarModalCategoria = false;
+    }
+
+    private void Volver()
+    {
+        Navigation.NavigateTo("/inventario");
+    }
+}

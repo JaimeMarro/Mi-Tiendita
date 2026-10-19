@@ -1,0 +1,10 @@
+<api type="debug" assembly-name="InventarioV1" mvid="733c5078f20542e78de45442d83fef5d">
+  <java-to-managed>
+    <entry java-name="crc641d8c0b463b30461b/MainActivity" managed-name="InventarioV1.MainActivity, InventarioV1" managed-type-token-id="33554441" />
+    <entry java-name="crc641d8c0b463b30461b/MainApplication" managed-name="InventarioV1.MainApplication, InventarioV1" managed-type-token-id="33554442" />
+  </java-to-managed>
+  <managed-to-java>
+    <entry java-name="crc641d8c0b463b30461b/MainActivity" managed-name="InventarioV1.MainActivity, InventarioV1" managed-type-token-id="33554441" />
+    <entry java-name="crc641d8c0b463b30461b/MainApplication" managed-name="InventarioV1.MainApplication, InventarioV1" managed-type-token-id="33554442" />
+  </managed-to-java>
+</api>

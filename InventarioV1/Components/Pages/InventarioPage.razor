@@ -1,0 +1,324 @@
+﻿@page "/inventario"
+@inject PupuseriaService Service
+@inject NavigationManager Navigation
+
+<div class="vender-header">
+    <span class="app-titulo">Mi Tiendita</span>
+</div>
+
+<div class="inventario-header">
+    <h2>Gestión de Catálogo</h2>
+    <p>Administra tus productos y precios de forma sencilla.</p>
+</div>
+
+<button class="btn-agregar" @onclick="AgregarProducto">
+    + AGREGAR PRODUCTO
+</button>
+
+@if (productos == null)
+{
+    <p class="sin-productos">Cargando...</p>
+}
+else if (!productos.Any())
+{
+    <p class="sin-productos">No hay productos aún. ¡Agregá el primero!</p>
+}
+else
+{
+    <div class="lista-productos">
+        @foreach (var producto in productos)
+        {
+            <div class="producto-card">
+                @if (!string.IsNullOrEmpty(producto.ImagenBase64))
+                {
+                    <img src="@producto.ImagenBase64" class="producto-imagen" />
+                }
+                else
+                {
+                    <div class="producto-imagen-placeholder">🫓</div>
+                }
+                <div class="producto-info">
+                    <span class="producto-nombre">@producto.Nombre</span>
+                    <span class="producto-categoria">@producto.Categoria.Nombre</span>
+                    <span class="producto-precio">$@producto.Precio.ToString("0.00")</span>
+                </div>
+                <div class="producto-acciones">
+                    <button class="btn-editar" @onclick="() => EditarProducto(producto)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">
+                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z" />
+                        </svg>
+                    </button>
+                    <button class="btn-eliminar" @onclick="() => EliminarProducto(producto)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+}
+<div style="padding: 16px; margin-top: 8px;">
+    <button class="tab" style="font-size:12px; color:#aaa; display:flex; align-items:center; gap:6px;"
+            @onclick="() => mostrarCategorias = !mostrarCategorias">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+        </svg>
+        Gestionar categorías
+    </button>
+
+    @if (mostrarCategorias)
+    {
+        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+            @foreach (var cat in categorias)
+            {
+                <div style="display:flex; justify-content:space-between; align-items:center;
+                    background:#fff; border-radius:10px; padding:10px 14px;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                    <span style="font-size:14px; font-weight:600;">@cat.Nombre</span>
+                    <button class="btn-eliminar" @onclick="() => EliminarCategoria(cat)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </button>
+                </div>
+            }
+        </div>
+    }
+</div>
+<div style="padding: 0 16px 16px 16px;">
+    <button class="tab" style="font-size:12px; color:#aaa; display:flex; align-items:center; gap:6px;"
+            @onclick="() => mostrarRespaldo = !mostrarRespaldo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+        Respaldo de datos
+    </button>
+
+    @if (mostrarRespaldo)
+    {
+        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-secondary" style="display:flex; align-items:center; justify-content:center; gap:8px;"
+                    @onclick="ExportarRespaldo" disabled="@exportando">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="7 10 12 15 17 10" />
+                    <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                @(exportando ? "Exportando..." : "Exportar respaldo")
+            </button>
+            <button class="btn-secondary" style="display:flex; align-items:center; justify-content:center; gap:8px;"
+                    @onclick="ImportarRespaldo" disabled="@importando">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                    <polyline points="17 8 12 3 7 8" />
+                    <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                @(importando ? "Importando..." : "Importar respaldo")
+            </button>
+
+            @if (!string.IsNullOrEmpty(mensajeRespaldo))
+            {
+                <p style="font-size:13px; color:#666; text-align:center; margin-top:4px;">@mensajeRespaldo</p>
+            }
+        </div>
+    }
+</div>
+
+@if (mostrarConfirmarEliminar)
+{
+    <div class="modal-overlay" @onclick="CancelarEliminar">
+        <div class="modal-confirmar" @onclick:stopPropagation="true">
+            <h3 style="display:flex; align-items:center; gap:8px; justify-content:center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px; color:#e53935;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                Eliminar Producto
+            </h3>
+            <p>¿Estás segura que querés eliminar <strong>@productoAEliminar?.Nombre</strong>?</p>
+            <button class="btn-eliminar-confirmar" @onclick="ConfirmarEliminarProducto">
+                Sí, eliminar
+            </button>
+            <button class="btn-secondary" @onclick="CancelarEliminar">
+                Cancelar
+            </button>
+        </div>
+    </div>
+}
+
+@if (mostrarConfirmarEliminarCat)
+{
+    <div class="modal-overlay" @onclick="CancelarEliminarCat">
+        <div class="modal-confirmar" @onclick:stopPropagation="true">
+            <h3 style="display:flex; align-items:center; gap:8px; justify-content:center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px; color:#e53935;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                    <line x1="12" y1="9" x2="12" y2="13" />
+                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+                Eliminar Categoría
+            </h3>
+            <p>¿Estás segura que querés eliminar <strong>@categoriaAEliminar?.Nombre</strong>?</p>
+            <button class="btn-eliminar-confirmar" @onclick="ConfirmarEliminarCategoria">
+                Sí, eliminar
+            </button>
+            <button class="btn-secondary" @onclick="CancelarEliminarCat">
+                Cancelar
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Producto>? productos;
+    private bool mostrarCategorias = false;
+    private List<Categoria> categorias = new();
+
+    private bool mostrarConfirmarEliminar = false;
+    private Producto? productoAEliminar;
+
+    private bool mostrarConfirmarEliminarCat = false;
+    private Categoria? categoriaAEliminar;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarProductos();
+        categorias = await Service.GetCategoriasAsync();
+    }
+
+    private async Task CargarProductos()
+    {
+        productos = await Service.GetProductosAsync();
+    }
+
+    private void AgregarProducto()
+    {
+        Navigation.NavigateTo("/agregar-producto");
+    }
+
+    private void EditarProducto(Producto producto)
+    {
+        Navigation.NavigateTo($"/editar-producto/{producto.Id}");
+    }
+
+    // ─── ELIMINAR PRODUCTO ───
+    private void EliminarProducto(Producto producto)
+    {
+        productoAEliminar = producto;
+        mostrarConfirmarEliminar = true;
+    }
+
+    private async Task ConfirmarEliminarProducto()
+    {
+        if (productoAEliminar != null)
+        {
+            await Service.EliminarProductoAsync(productoAEliminar);
+            await CargarProductos();
+        }
+        mostrarConfirmarEliminar = false;
+        productoAEliminar = null;
+    }
+
+    private void CancelarEliminar()
+    {
+        mostrarConfirmarEliminar = false;
+        productoAEliminar = null;
+    }
+
+    // ─── ELIMINAR CATEGORIA ───
+    private void EliminarCategoria(Categoria categoria)
+    {
+        categoriaAEliminar = categoria;
+        mostrarConfirmarEliminarCat = true;
+    }
+
+    private async Task ConfirmarEliminarCategoria()
+    {
+        if (categoriaAEliminar != null)
+        {
+            await Service.EliminarCategoriaAsync(categoriaAEliminar);
+            categorias = await Service.GetCategoriasAsync();
+        }
+        mostrarConfirmarEliminarCat = false;
+        categoriaAEliminar = null;
+    }
+
+    private void CancelarEliminarCat()
+    {
+        mostrarConfirmarEliminarCat = false;
+        categoriaAEliminar = null;
+    }
+
+    private bool mostrarRespaldo = false;
+    private bool exportando = false;
+    private bool importando = false;
+    private string mensajeRespaldo = string.Empty;
+
+    private async Task ExportarRespaldo()
+    {
+        exportando = true;
+        mensajeRespaldo = string.Empty;
+        try
+        {
+            var json = await Service.ExportarDatosAsync();
+            var nombreArchivo = $"respaldo_{DateTime.Now:yyyy-MM-dd_HHmm}.json";
+            var ruta = Path.Combine(FileSystem.CacheDirectory, nombreArchivo);
+            await File.WriteAllTextAsync(ruta, json);
+
+            await Share.RequestAsync(new ShareFileRequest
+            {
+                Title = "Compartir respaldo",
+                File = new ShareFile(ruta)
+            });
+
+            mensajeRespaldo = "Respaldo generado correctamente.";
+        }
+        catch (Exception ex)
+        {
+            mensajeRespaldo = $"Error al exportar: {ex.Message}";
+        }
+        exportando = false;
+    }
+
+    private async Task ImportarRespaldo()
+    {
+        importando = true;
+        mensajeRespaldo = string.Empty;
+        try
+        {
+            var resultado = await FilePicker.PickAsync(new PickOptions
+            {
+                PickerTitle = "Seleccionar archivo de respaldo",
+                FileTypes = new FilePickerFileType(new Dictionary<DevicePlatform, IEnumerable<string>>
+                {
+                    { DevicePlatform.Android, new[] { "application/json" } }
+                })
+            });
+
+            if (resultado != null)
+            {
+                var json = await File.ReadAllTextAsync(resultado.FullPath);
+                var (exito, mensaje) = await Service.ImportarDatosAsync(json);
+                mensajeRespaldo = mensaje;
+
+                if (exito)
+                {
+                    await CargarProductos();
+                    categorias = await Service.GetCategoriasAsync();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            mensajeRespaldo = $"Error al importar: {ex.Message}";
+        }
+        importando = false;
+    }
+}

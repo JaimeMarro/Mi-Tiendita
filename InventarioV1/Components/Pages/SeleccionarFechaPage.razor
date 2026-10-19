@@ -1,0 +1,250 @@
+﻿@page "/seleccionar-fecha"
+@inject NavigationManager Navigation
+
+<div class="page-header-bar">
+    <button class="btn-back" @onclick="Volver">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+        </svg>
+    </button>
+    <span class="app-titulo">Seleccionar Fecha</span>
+</div>
+
+<div class="calendario-page">
+
+    <div class="calendario-tabs">
+        <button class="@(modo == "dia" ? "tab activa" : "tab")"
+                @onclick='() => CambiarModo("dia")'>
+            Día
+        </button>
+        <button class="@(modo == "semana" ? "tab activa" : "tab")"
+                @onclick='() => CambiarModo("semana")'>
+            Semana
+        </button>
+        <button class="@(modo == "mes" ? "tab activa" : "tab")"
+                @onclick='() => CambiarModo("mes")'>
+            Mes
+        </button>
+    </div>
+
+    <div class="calendario-grid">
+        <div class="calendario-nav">
+            <button class="btn-nav-mes" @onclick="MesAnterior">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
+                    <polyline points="15 18 9 12 15 6" />
+                </svg>
+            </button>
+            <span class="calendario-mes">
+                @mesActual.ToString("MMMM yyyy",
+                    new System.Globalization.CultureInfo("es-ES")).ToUpper()
+            </span>
+            <button class="btn-nav-mes" @onclick="MesSiguiente">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;">
+                    <polyline points="9 18 15 12 9 6" />
+                </svg>
+            </button>
+        </div>
+
+        @if (modo != "mes")
+        {
+            <div class="dias-semana">
+                @foreach (var dia in new[] { "DOM", "LUN", "MAR", "MIÉ", "JUE", "VIE", "SÁB" })
+                {
+                    <div class="dia-semana">@dia</div>
+                }
+            </div>
+
+            <div class="dias-grid">
+                @foreach (var dia in DiasDelMes())
+                {
+                    @if (dia == 0)
+                    {
+                        <div></div>
+                    }
+                    else
+                    {
+                        var fecha = new DateTime(mesActual.Year, mesActual.Month, dia);
+                        var clase = ObtenerClaseDia(fecha);
+                        <button class="@clase" @onclick="() => SeleccionarDia(fecha)">
+                            @dia
+                        </button>
+                    }
+                }
+            </div>
+        }
+        else
+        {
+            <div style="padding: 16px 0; text-align: center;">
+                <div style="text-align:center; margin-bottom:8px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#B84A0A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:48px;height:48px;">
+                        <rect x="3" y="4" width="18" height="18" rx="2" />
+                        <line x1="16" y1="2" x2="16" y2="6" />
+                        <line x1="8" y1="2" x2="8" y2="6" />
+                        <line x1="3" y1="10" x2="21" y2="10" />
+                    </svg>
+                </div>
+                <div style="font-size: 16px; font-weight: 700; color: #B84A0A; margin-top: 8px;">
+                    @mesActual.ToString("MMMM yyyy",
+                        new System.Globalization.CultureInfo("es-ES")).ToUpper()
+                </div>
+                <div style="font-size: 13px; color: #888; margin-top: 4px;">
+                    Todo el mes seleccionado
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (MostrarConfirmar())
+    {
+        <div class="preview-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px; flex-shrink:0;">
+                <circle cx="12" cy="12" r="9" />
+                <polyline points="12 7 12 12 16 14" />
+            </svg>
+            <span>@ObtenerDescripcion()</span>
+        </div>
+
+        <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-primary" @onclick="Confirmar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;vertical-align:-3px;margin-right:6px;">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Confirmar Selección
+            </button>
+            <button class="btn-secondary" @onclick="Volver">
+                Cancelar y Volver
+            </button>
+        </div>
+    }
+    else if (modo == "mes")
+    {
+        <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 8px;">
+            <button class="btn-primary" @onclick="Confirmar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;vertical-align:-3px;margin-right:6px;">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Ver @mesActual.ToString("MMMM", new System.Globalization.CultureInfo("es-ES"))
+            </button>
+            <button class="btn-secondary" @onclick="Volver">
+                Cancelar y Volver
+            </button>
+        </div>
+    }
+
+</div>
+
+@code {
+    private DateTime mesActual = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+    private DateTime? fechaSeleccionada;
+    private string modo = "dia";
+
+    private void CambiarModo(string nuevoModo)
+    {
+        modo = nuevoModo;
+        fechaSeleccionada = null;
+    }
+
+    private void MesAnterior() => mesActual = mesActual.AddMonths(-1);
+    private void MesSiguiente() => mesActual = mesActual.AddMonths(1);
+
+    private void SeleccionarDia(DateTime fecha)
+    {
+        if (modo == "dia")
+        {
+            fechaSeleccionada = fecha;
+        }
+        else if (modo == "semana")
+        {
+            // Selecciona el inicio de la semana del día tocado
+            var inicioDeSemana = fecha.AddDays(-(int)fecha.DayOfWeek);
+            fechaSeleccionada = inicioDeSemana;
+        }
+    }
+
+    private string ObtenerClaseDia(DateTime fecha)
+    {
+        var esHoy = fecha == DateTime.Today;
+
+        if (modo == "dia")
+        {
+            if (fechaSeleccionada.HasValue && fecha == fechaSeleccionada.Value)
+                return "dia-btn seleccionado";
+            return esHoy ? "dia-btn hoy" : "dia-btn";
+        }
+
+        if (modo == "semana" && fechaSeleccionada.HasValue)
+        {
+            var inicio = fechaSeleccionada.Value;
+            var fin = inicio.AddDays(6);
+            if (fecha >= inicio && fecha <= fin)
+                return "dia-btn seleccionado";
+        }
+
+        return esHoy ? "dia-btn hoy" : "dia-btn";
+    }
+
+    private bool MostrarConfirmar()
+    {
+        if (modo == "mes") return false;
+        if (modo == "dia" && fechaSeleccionada.HasValue) return true;
+        if (modo == "semana" && fechaSeleccionada.HasValue) return true;
+        return false;
+    }
+
+    private string ObtenerDescripcion()
+    {
+        if (modo == "dia" && fechaSeleccionada.HasValue)
+            return fechaSeleccionada.Value.ToString("dddd dd 'de' MMMM yyyy",
+                new System.Globalization.CultureInfo("es-ES"));
+
+        if (modo == "semana" && fechaSeleccionada.HasValue)
+        {
+            var fin = fechaSeleccionada.Value.AddDays(6);
+            return $"Semana del {fechaSeleccionada.Value:dd/MM} al {fin:dd/MM/yyyy}";
+        }
+
+        return string.Empty;
+    }
+
+    private void Confirmar()
+    {
+        if (modo == "mes")
+        {
+            Navigation.NavigateTo(
+                $"/historial?filtro=mes&anio={mesActual.Year}&mes={mesActual.Month}");
+            return;
+        }
+        if (modo == "semana" && fechaSeleccionada.HasValue)
+        {
+            Navigation.NavigateTo(
+                $"/historial?filtro=semana&fecha={fechaSeleccionada.Value:yyyy-MM-dd}");
+            return;
+        }
+        if (modo == "dia" && fechaSeleccionada.HasValue)
+        {
+            Navigation.NavigateTo(
+                $"/historial?filtro=fecha&fecha={fechaSeleccionada.Value:yyyy-MM-dd}");
+        }
+    }
+
+    private void Volver()
+    {
+        Navigation.NavigateTo("/historial");
+    }
+
+    private List<int> DiasDelMes()
+    {
+        var dias = new List<int>();
+        var primerDia = new DateTime(mesActual.Year, mesActual.Month, 1);
+        var totalDias = DateTime.DaysInMonth(mesActual.Year, mesActual.Month);
+
+        for (int i = 0; i < (int)primerDia.DayOfWeek; i++)
+            dias.Add(0);
+
+        for (int i = 1; i <= totalDias; i++)
+            dias.Add(i);
+
+        return dias;
+    }
+}

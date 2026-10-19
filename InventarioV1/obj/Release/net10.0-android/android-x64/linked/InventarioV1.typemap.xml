@@ -1,0 +1,8 @@
+<api type="release" assembly-name="InventarioV1" mvid="4a76f0f7858741e0bd28bc0e1dcc3638">
+  <module assembly-name="InventarioV1" mvid="4a76f0f7858741e0bd28bc0e1dcc3638" mvid-bytes="9/B2SoeF4EG9KLwOHcw2OA==">
+    <types-scratch>
+      <entry key="crc641d8c0b463b30461b/MainActivity" java-name="crc641d8c0b463b30461b/MainActivity" managed-type-name="InventarioV1.MainActivity" token="33554440" />
+      <entry key="crc641d8c0b463b30461b/MainApplication" java-name="crc641d8c0b463b30461b/MainApplication" managed-type-name="InventarioV1.MainApplication" token="33554441" />
+    </types-scratch>
+  </module>
+</api>

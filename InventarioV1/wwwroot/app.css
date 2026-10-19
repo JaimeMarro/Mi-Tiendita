@@ -1,0 +1,869 @@
+/* ─── BASE ─── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f5f0eb;
+    color: #212121;
+    overflow: hidden;
+}
+
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    background: #f5f0eb;
+}
+
+.main-content {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: calc(120px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ─── HEADER ─── */
+.vender-header, .page-header-bar {
+    background: #fff;
+    padding: 44px 16px 14px 16px;
+    border-bottom: 1px solid #e0d8d0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-titulo {
+    font-size: 14px;
+    font-weight: 700;
+    color: #B84A0A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.page-header-bar .btn-back {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #B84A0A;
+}
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: #fff;
+    border-top: 1px solid #e0d8d0;
+    height: 65px;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 430px;
+    margin: 0 auto;
+    z-index: 100;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    text-decoration: none;
+    color: #888;
+    font-size: 11px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    transition: color 0.2s;
+}
+
+    .bottom-nav-item.active {
+        color: #B84A0A;
+        font-weight: 600;
+    }
+
+.nav-icon {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .nav-icon svg {
+        width: 20px;
+        height: 20px;
+    }
+
+.nav-label {
+    font-size: 11px;
+}
+
+/* ─── BOTONES ─── */
+.btn-primary {
+    background: #B84A0A;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    width: 100%;
+    cursor: pointer;
+    letter-spacing: 1px;
+}
+
+    .btn-primary:active {
+        background: #8f3a07;
+    }
+
+.btn-secondary {
+    background: #fff;
+    color: #B84A0A;
+    border: 2px solid #B84A0A;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+}
+
+.btn-agregar {
+    background: #B84A0A;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: 700;
+    width: calc(100% - 32px);
+    margin: 16px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    display: block;
+}
+
+/* ─── TABS / CATEGORIAS ─── */
+.categorias-tabs, .historial-filtros {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    background: #fff;
+    border-bottom: 1px solid #e0d8d0;
+}
+
+.tab {
+    background: #f0ebe4;
+    border: none;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+    .tab.activa {
+        background: #B84A0A;
+        color: #fff;
+    }
+
+/* ─── PRODUCTOS (VENDER) ─── */
+.productos-lista {
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.producto-vender-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.producto-vender-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.producto-vender-nombre {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.producto-vender-precio {
+    font-size: 15px;
+    color: #B84A0A;
+    font-weight: 700;
+}
+
+.producto-vender-img {
+    width: 100%;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.producto-placeholder {
+    width: 100%;
+    height: 130px;
+    background: #f0ebe4;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+}
+
+.cantidad-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-cantidad {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .btn-cantidad.menos {
+        background: #f0ebe4;
+        color: #333;
+    }
+
+    .btn-cantidad.mas {
+        background: #B84A0A;
+        color: #fff;
+    }
+
+.cantidad-num {
+    font-size: 16px;
+    font-weight: 700;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* ─── BARRA COBRAR ─── */
+.barra-cobrar {
+    position: fixed;
+    bottom: calc(65px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    max-width: 430px;
+    margin: 0 auto;
+    background: #fff;
+    border-top: 1px solid #e0d8d0;
+    padding: 10px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 99;
+}
+
+.barra-total-label {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.barra-total-monto {
+    font-size: 20px;
+    font-weight: 800;
+    color: #B84A0A;
+}
+
+.btn-cobrar {
+    background: #B84A0A;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ─── INVENTARIO ─── */
+.inventario-header {
+    padding: 16px;
+}
+
+    .inventario-header h2 {
+        font-size: 22px;
+        font-weight: 800;
+        color: #212121;
+    }
+
+    .inventario-header p {
+        font-size: 13px;
+        color: #888;
+        margin-top: 4px;
+    }
+
+.lista-productos {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.producto-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.producto-imagen {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.producto-imagen-placeholder {
+    width: 60px;
+    height: 60px;
+    background: #f0ebe4;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.producto-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.producto-nombre {
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.producto-categoria {
+    font-size: 12px;
+    color: #888;
+}
+
+.producto-precio {
+    font-size: 15px;
+    font-weight: 700;
+    color: #B84A0A;
+}
+
+.producto-acciones {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.btn-editar, .btn-eliminar {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid #e0d8d0;
+    background: #fff;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-eliminar {
+    color: #e53935;
+    border-color: #ffd0ce;
+}
+
+/* ─── FORMULARIOS ─── */
+.form-page {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+    .form-group label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #555;
+    }
+
+.form-input {
+    border: 1.5px solid #e0d8d0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 15px;
+    background: #fff;
+    outline: none;
+    width: 100%;
+}
+
+    .form-input:focus {
+        border-color: #B84A0A;
+    }
+
+.imagen-upload {
+    border: 2px dashed #e0d8d0;
+    border-radius: 14px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #faf7f4;
+    cursor: pointer;
+    font-size: 13px;
+    color: #888;
+}
+
+.imagen-preview {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.categorias-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.categoria-chip {
+    background: #f0ebe4;
+    border: 1.5px solid transparent;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    cursor: pointer;
+}
+
+    .categoria-chip.selected {
+        background: #fff3ee;
+        border-color: #B84A0A;
+        color: #B84A0A;
+    }
+
+    .categoria-chip.nueva {
+        background: #fff;
+        border-color: #B84A0A;
+        color: #B84A0A;
+    }
+
+/* ─── COBRAR ─── */
+.cobrar-page {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.cobrar-total-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+
+.cobrar-total-label {
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cobrar-total-monto {
+    font-size: 40px;
+    font-weight: 800;
+    color: #B84A0A;
+    margin-top: 4px;
+}
+
+.billetes-rapidos {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-billete {
+    flex: 1;
+    background: #fff;
+    border: 1.5px solid #e0d8d0;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+
+    .btn-billete.selected {
+        background: #fff3ee;
+        border-color: #B84A0A;
+        color: #B84A0A;
+    }
+
+.cambio-box {
+    background: #f0ebe4;
+    border-radius: 14px;
+    padding: 16px;
+    text-align: center;
+}
+
+.cambio-label {
+    font-size: 12px;
+    color: #888;
+    text-transform: uppercase;
+}
+
+.cambio-monto {
+    font-size: 32px;
+    font-weight: 800;
+    color: #212121;
+    margin-top: 4px;
+}
+
+.btn-completar {
+    background: #2e7d32;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 1px;
+    width: 100%;
+}
+
+/* ─── HISTORIAL ─── */
+.resumen-card {
+    background: #B84A0A;
+    margin: 16px;
+    border-radius: 16px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: #fff;
+}
+
+.resumen-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    opacity: 0.85;
+}
+
+.resumen-monto {
+    font-size: 36px;
+    font-weight: 800;
+}
+
+.resumen-sub {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.seccion-titulo {
+    padding: 0 16px 8px;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.lista-transacciones {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.transaccion-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.transaccion-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.transaccion-hora {
+    font-size: 12px;
+    color: #888;
+}
+
+.transaccion-detalle {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.transaccion-monto {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.monto {
+    font-size: 15px;
+    font-weight: 700;
+    color: #B84A0A;
+}
+
+.completado {
+    font-size: 10px;
+    color: #2e7d32;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* ─── CALENDARIO ─── */
+.calendario-page {
+    padding: 16px;
+}
+
+.calendario-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.calendario-grid {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+}
+
+.calendario-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.calendario-mes {
+    font-size: 16px;
+    font-weight: 700;
+    color: #B84A0A;
+}
+
+.btn-nav-mes {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #B84A0A;
+    padding: 4px 8px;
+}
+
+.dias-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.dia-semana {
+    font-size: 11px;
+    font-weight: 700;
+    color: #888;
+    padding: 4px 0;
+}
+
+.dias-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.dia-btn {
+    aspect-ratio: 1;
+    border: none;
+    background: none;
+    border-radius: 50%;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .dia-btn.hoy {
+        background: #f0ebe4;
+        font-weight: 700;
+    }
+
+    .dia-btn.seleccionado {
+        background: #B84A0A;
+        color: #fff;
+        font-weight: 700;
+    }
+
+.preview-box {
+    background: #f0ebe4;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #555;
+}
+
+/* ─── UTILIDADES ─── */
+.sin-productos {
+    text-align: center;
+    color: #aaa;
+    padding: 40px 20px;
+    font-size: 14px;
+}
+
+.precio-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.precio-simbolo {
+    font-size: 16px;
+    font-weight: 700;
+    color: #555;
+}
+
+/* ─── MODAL ─── */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 24px;
+}
+
+.modal-box {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal-titulo {
+    font-size: 20px;
+    font-weight: 800;
+    color: #212121;
+}
+
+/* ─── MODAL CONFIRMACIÓN ─── */
+.modal-confirmar {
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+}
+
+    .modal-confirmar h3 {
+        font-size: 18px;
+        font-weight: 800;
+        color: #212121;
+    }
+
+    .modal-confirmar p {
+        font-size: 14px;
+        color: #888;
+    }
+
+.btn-eliminar-confirmar {
+    background: #e53935;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    width: 100%;
+    cursor: pointer;
+}
+
+/* ─── ANIMACIÓN DE PRESIONADO ─── */
+button, .bottom-nav-item, .tab, a {
+    transition: transform 0.08s ease, filter 0.08s ease, opacity 0.08s ease;
+}
+
+    button:active,
+    .bottom-nav-item:active,
+    .tab:active,
+    a:active {
+        transform: scale(0.96);
+        filter: brightness(0.85) saturate(1.3);
+        opacity: 0.95;
+    }

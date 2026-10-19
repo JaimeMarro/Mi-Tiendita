@@ -1,0 +1,4 @@
+D:\ProyectosJaime\InventarioV1\APK_V2\com.mitiendita.app-Signed.aab
+D:\ProyectosJaime\InventarioV1\APK_V2\com.mitiendita.app.aab
+D:\ProyectosJaime\InventarioV1\APK_V2\com.mitiendita.app-Signed.apk
+D:\ProyectosJaime\InventarioV1\APK_V2\_Microsoft.Android.Resource.Designer.dll
